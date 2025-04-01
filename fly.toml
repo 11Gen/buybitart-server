@@ -4,7 +4,7 @@
 #
 
 app = '5ksana-backend'
-primary_region = 'ams'
+primary_region = 'waw'
 
 [build]
 
@@ -15,6 +15,10 @@ primary_region = 'ams'
   auto_start_machines = true
   min_machines_running = 0
   processes = ['app']
+
+[[mounts]]
+  destination = "/app/uploads"
+  source = "uploads"
 
 [[vm]]
   memory = '1gb'
