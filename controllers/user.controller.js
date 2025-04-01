@@ -12,7 +12,7 @@ class UserController {
   async registration(req, res, next) {
     try {
       const userData = await userService.registration(req.body);
-      const templatePath = path.join(__dirname, "../uploads/email-template.html");
+      const templatePath = path.join(__dirname, "../utils/email-template.html");
       if (!fs.existsSync(templatePath)) {
           console.error("Email template not found:", templatePath);
           return res.status(500).json({ message: "Email template missing" });
