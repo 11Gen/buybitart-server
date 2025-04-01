@@ -26,5 +26,5 @@ const AuctionSchema = new mongoose.Schema({
     blackList: [],
     createdAt: { type: Date, default: Date.now },
 });
-const auction = mongoose.model('Auction', AuctionSchema);
+const auction = mongoose.model('Auction', AuctionSchema)
 module.exports = {auction}
