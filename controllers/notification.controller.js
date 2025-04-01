@@ -203,7 +203,7 @@ class NotificationController {
   }
 
   loadTemplate(templateName) {
-    const templatePath = path.join(__dirname, `../uploads/${templateName}`);
+    const templatePath = path.join(__dirname, `../utils/${templateName}`);
     if (!fs.existsSync(templatePath)) {
       console.error(`Email template not found: ${templatePath}`);
       return null;
