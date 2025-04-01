@@ -40,6 +40,8 @@ class UserController {
       res.cookie("refreshToken", userData.user.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'None'
       });
       const userDTO = new UserDTO(userData.user);
       return res.json({ accessToken: userData.accessToken, user: userDTO });
@@ -56,6 +58,8 @@ class UserController {
       res.cookie("refreshToken", userData.user.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'None'
       });
       const userDTO = new UserDTO(userData.user);
       return res.json({ accessToken: userData.accessToken, user: userDTO });
@@ -99,6 +103,8 @@ class UserController {
       res.cookie("refreshToken", userData.user.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'None'
       });
       return res.json(userData);
     } catch (e) {
@@ -125,8 +131,9 @@ class UserController {
           res.cookie("refreshToken", userData.user.refreshToken, {
             maxAge: 30 * 24 * 60 * 60 * 1000,
             httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'None'
           });
-
         return res.json(userData);
       }
     } catch (e) {
