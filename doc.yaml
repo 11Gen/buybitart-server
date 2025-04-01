@@ -1,0 +1,399 @@
+openapi: 3.0.0
+info:
+  title: Product and Auction API
+  version: 1.0.0
+  description: API for managing products and auctions.
+
+paths:
+  /users:
+    get:
+      summary: get a list of users
+      tags:
+        - Users
+      security:
+        - BearerAuth: [] #Requires Bearer token in Authorization header
+      responses:
+        '200':
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+
+    post:
+      summary: register a new user
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegistration'
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid input
+
+  /users/login:
+    post:
+      summary: log in a user
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: refresh access and refresh tokens
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                    description: Access token
+                  refreshToken:
+                    type: string
+                    description: Refresh token
+        '400':
+          description: Invalid credentials
+
+
+  /users/refresh:
+    get:
+      summary: refresh access token
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+                  description: Refresh token
+      responses:
+        '200':
+          description: Access token refreshed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+  /products:
+    get:
+      summary: get a list of products
+      tags:
+        - Products
+      responses:
+        '200':
+          description: a list of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+    post:
+      summary: create a new product
+      tags:
+        - Products
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '201':
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Invalid input
+
+  /products/{id}:
+    get:
+      summary: get a product by ID
+      tags:
+        - Products
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of the product
+      responses:
+        '200':
+          description: A single product
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Product not found
+    put:
+      summary: Update a product
+      tags:
+        - Products
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of the product to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '200':
+          description: product updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Product not found
+    delete:
+      summary: Delete a product
+      tags:
+        - Products
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of the product to delete
+      responses:
+        '204':
+          description: Product deleted successfully
+        '404':
+          description: Product not found
+
+
+
+  /auctions:
+    get:
+      summary: Get all auctions
+      tags:
+        - Auctions
+      responses:
+        '200':
+          description: A list of auctions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Auction'
+    post:
+      summary: Create a new auction
+      tags:
+        - Auctions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Auction'
+      responses:
+        '201':
+          description: Auction created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Auction'
+        '400':
+          description: Invalid input
+
+  /auctions/{id}:
+    get:
+      summary: Get a single auction by ID
+      tags:
+        - Auctions
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of the auction
+      responses:
+        '200':
+          description: A single auction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Auction'
+        '404':
+          description: Auction not found
+    put:
+      summary: Update an auction
+      tags:
+        - Auctions
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of the auction to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Auction'
+      responses:
+        '200':
+          description: Auction updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Auction'
+        '404':
+          description: Auction not found
+    delete:
+      summary: delete a auction
+      tags:
+        - Auctions
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of the auction to delete
+      responses:
+        '204':
+          description: auction deleted successfully
+        '404':
+          description: auction not found
+
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        email:
+          type: string
+          description: User email
+          required: true
+        isActivated:
+          type: boolean
+          description: Is user activated?
+        activationLink:
+          type: string
+          description: Activation link
+        name:
+          type: string
+          description: User name
+          required: true
+        walletAddress:
+          type: string
+          description: Wallet address
+        isAdmin:
+          type: boolean
+          description: Is user admin?
+        refreshToken:
+          type: string
+          description: Refresh token (Should not be returned in responses generally)
+
+    Product:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Product name
+          required: true
+        description:
+          type: string
+          description: Product description
+        price:
+          type: number
+          description: Product price
+          required: true
+        image:
+          type: string
+          description: Product image URL
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+
+    Auction:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Auction title
+          required: true
+        description:
+          type: string
+          description: Auction description
+        startPrice:
+          type: number
+          description: Starting price
+          required: true
+        currentPrice:
+          type: number
+          description: Current highest bid
+        bids:
+          type: array
+          items:
+            type: object
+            properties:
+              userId:
+                type: string
+                description: ID of the user who placed the bid
+              amount:
+                type: number
+                description: Bid amount
+              time:
+                type: string
+                format: date-time
+                description: Bid timestamp
+        startTime:
+          type: string
+          format: date-time
+          description: Auction start time
+          required: true
+        endTime:
+          type: string
+          format: date-time
+          description: Auction end time
+          required: true
+        winner:
+          type: string
+          description: ID of the winning user
+        status:
+          type: string
+          description: Auction status ('active' or 'completed')
+          enum: ['active', 'completed']
