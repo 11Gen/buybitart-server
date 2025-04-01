@@ -40,7 +40,7 @@ class UserController {
       res.cookie("refreshToken", userData.user.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: true,
         sameSite: 'None'
       });
       const userDTO = new UserDTO(userData.user);
@@ -58,7 +58,7 @@ class UserController {
       res.cookie("refreshToken", userData.user.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: true,
         sameSite: 'None'
       });
       const userDTO = new UserDTO(userData.user);
@@ -103,7 +103,7 @@ class UserController {
       res.cookie("refreshToken", userData.user.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: true,
         sameSite: 'None'
       });
       return res.json(userData);
