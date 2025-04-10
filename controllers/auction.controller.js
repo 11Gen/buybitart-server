@@ -207,6 +207,7 @@ class AuctionController {
       setImmediate(async () => {
         try {
             await Promise.all([
+                notificationController.placedBidUser(auc, populatedBid, usr, auctionTimeLeft),
                 notificationController.sendTelegramNotification(message, 1),
                 notificationController.sendBidEmails(auc, populatedBid, usr, auctionTimeLeft)
             ]);

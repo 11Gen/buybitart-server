@@ -6,6 +6,151 @@ const mailService = require("../services/mail.service");
 const notificationService = require("../services/notification.service");
 
 class NotificationController {
+  async sendBoughtArt(order, body, method, type) {
+    try {
+      await this.sendEmail(
+        '"BuyBitArt.com" <info@buybitart.com>',
+        body.email,
+        "💛 Thank You for Your Order!",
+        "Thank you for your order and trust!",
+        "email-template.html",
+        {
+          message: `
+          <p>Hi ${body.firstname} ${body.lastname},<br/>
+          Thank you for your order at BuyBitArt! We're excited to process it.</p>
+          
+          <p><b>Order Details:</b><br/>
+            ${order.items
+              .map((item) => `<span>■ ${item.title} x${item.quantity}</span>`)
+              .join("")} ${type ? `(${type})` : ''}
+          </p>
+          
+          <p>
+            <b>Total:</b> ${order.totalPrice.toFixed(4)} BTC<br>
+            <b>Order ID:</b> ${order.orderId}<br>
+            <b>Payment Status:</b> ${order.status}<br>
+            <b>Payment Method:</b> ${method}
+          </p>
+          
+          <p><b>Shipping To:</b><br>
+            ${body.country}, ${body.city}, ${body.street}, ${body.zip}
+          </p>
+          
+          ${body.notes ? `<p><b>Notes:</b> ${body.notes}</p>` : ""}
+          
+          <p>We'll send you a tracking number as soon as your order is ready for shipment.<br/>
+          Thanks again for choosing BuyBitArt!</p>
+        `,
+        }
+      );
+    } catch (error) {
+      console.error("Error sending auction emails:", error);
+    }
+  }
+
+  async placedBidUser(auction, bid, user, auctionTimeLeft) {
+    try {
+      await this.sendEmail(
+        '"BuyBitArt.com" <info@buybitart.com>',
+        user.email,
+        "Your Bid Placed Successfully!",
+        "Your Bid Placed Successfully!",
+        "email-template.html",
+        {
+          message: `
+          <p>Hi ${user.name},<br/>
+          Your auction bid was placed successfully at BuyBitArt!<br/>
+          <b>Auction: </b> ${auction.title}</p>
+
+              <p>
+                <b>Current price:</b> ${auction.currentPrice.toFixed(4)} BTC</br>
+                <b>Bid:</b> ${bid.amount.toFixed(4)} BTC
+              </p>
+
+              <p><b>⏳ Auction ends in ${auctionTimeLeft}</b></p>
+          `,
+        }
+      );
+    } catch (error) {
+      console.error("Error sending auction emails:", error);
+    }
+  }
+
+  async orderUpdated(order, user, method, type) {
+    try {
+      await this.sendEmail(
+        '"BuyBitArt.com" <info@buybitart.com>',
+        user.email,
+        "Order Status Updated!",
+        "Thank you for your order and trust!",
+        "email-template.html",
+        {
+          message: `
+          <p>Hi ${user.email || user.name},<br/>
+          Your order status at BuyBitArt was updated! ${order.status === "completed" ? "We recived your payment." : order.status === "failed" ? "We haven't recived your payment." : ""}</p>
+          
+          <p><b>Order Details:</b><br/>
+            ${order.items
+              .map((item) => `<span>■ ${item.title} x${item.quantity}</span>`)
+              .join("")} ${type ? `(${type})` : ''}
+          </p>
+          
+          <p>
+            <b>Total:</b> ${order.totalPrice.toFixed(4)} BTC<br>
+            <b>Order ID:</b> ${order.orderId}<br>
+            <b>Payment Status:</b> ${order.status}<br>
+            <b>Payment Method:</b> ${method}
+          </p>
+          
+          ${order.status === 'completed' ? `<p>We'll send you a tracking number as soon as your order is ready for shipment.<br/>
+          Thanks again for choosing BuyBitArt!</p>` : ''}
+        `,
+        }
+      );
+    } catch (error) {
+      console.error("Error sending auction emails:", error);
+    }
+  }
+
+  async orderUpdatedSelf(order, user, method, type) {
+    try {
+      await this.sendEmail(
+        '"BuyBitArt.com" <info@buybitart.com>',
+        "info@buybitart.com",
+        "Order Status Updated!",
+        "Order Status Updated!",
+        "email-template.html",
+        {
+          message: `
+          <p>Order status at BuyBitArt was updated! ${order.status === "completed" ? "Payment recived." : order.status === "failed" ? "Payment not recived." : ""}</p>
+          
+          <p><b>Order Details:</b><br/>
+            ${order.items
+              .map((item) => `<span>■ ${item.title} x${item.quantity}</span>`)
+              .join("")} ${type ? `(${type})` : ''}
+          </p>
+          
+          <p>
+            <b>Total:</b> ${order.totalPrice.toFixed(4)} BTC<br>
+            <b>Order ID:</b> ${order.orderId}<br>
+            <b>Payment Status:</b> ${order.status}<br>
+            <b>Payment Method:</b> ${method}
+          </p>
+
+          <p>
+            <b>Buyer Details:</b><br>
+            ${user.name ? `<b>Nickname:</b> ${user.name}<br>` : ''}
+            <b>Email:</b> ${user.email}<br>
+            <b>UserID:</b> ${user._id}<br>
+          </p>
+        `,
+        }
+      );
+    } catch (error) {
+      console.error("Error sending auction emails:", error);
+    }
+  }
+
   async sendAuctionEndEmails(auc, winner) {
     try {
       const notificationSettings = await getMainSettings();
@@ -58,7 +203,7 @@ class NotificationController {
     }
   }
 
-  async sendOrderEmails(order, body, email, type) {
+  async sendOrderEmails(order, body, email, type, method) {
     try {
       const notificationSettings = await getMainSettings();
       const emailSettings = notificationSettings[0]?.emailNotifications || {};
@@ -85,7 +230,7 @@ class NotificationController {
                 <b>Total Price:</b> ${order.totalPrice.toFixed(4)} BTC</br>
                 <b>Order ID:</b> ${order.orderId}</br>
                 <b>Status:</b> ${order.status}</br>
-                <b>Payment Processor:</b> Stripe
+                <b>Payment Processor:</b> ${method}
               </p>
 
               <p>
@@ -167,7 +312,7 @@ class NotificationController {
 
       await notificationService.sendTelegram(message, telegramChatId);
     } catch (e) {
-      console.error("Error sending tg notification:", error);
+      console.error("Error sending tg notification:", e);
     }
   }
 
@@ -180,7 +325,7 @@ class NotificationController {
         "New message from contact form",
         "email-template.html",
         {
-          message: `<p>${message}</p> <p><b>From: </b> ${name} (${email})</p>`
+          message: `<p>${message}</p> <p><b>From: </b> ${name} (${email})</p>`,
         }
       );
     } catch (error) {
@@ -193,17 +338,11 @@ class NotificationController {
     if (!template) return;
 
     const htmlToSend = template(replacements);
-    await mailService.sendMail(
-      from,
-      to,
-      subject,
-      title,
-      htmlToSend
-    );
+    await mailService.sendMail(from, to, subject, title, htmlToSend);
   }
 
   loadTemplate(templateName) {
-    const templatePath = path.join(__dirname, `../uploads/${templateName}`);
+    const templatePath = path.join(__dirname, `../utils/${templateName}`);
     if (!fs.existsSync(templatePath)) {
       console.error(`Email template not found: ${templatePath}`);
       return null;

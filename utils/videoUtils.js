@@ -1,6 +1,9 @@
 const path = require("path");
 const fs = require("fs");
+const ffmpegStatic = require("ffmpeg-static");
 const ffmpeg = require("fluent-ffmpeg");
+
+ffmpeg.setFfmpegPath(ffmpegStatic);
 
 const compressedDir = path.join(__dirname, "..", "uploads");
 if (!fs.existsSync(compressedDir)) fs.mkdirSync(compressedDir, { recursive: true });

@@ -8,11 +8,13 @@ const handlebars = require("handlebars");
 const fs = require("fs");
 const path = require("path");
 
+const secure = true;
+
 class UserController {
   async registration(req, res, next) {
     try {
       const userData = await userService.registration(req.body);
-      const templatePath = path.join(__dirname, "../uploads/email-template.html");
+      const templatePath = path.join(__dirname, "../utils/email-template.html");
       if (!fs.existsSync(templatePath)) {
           console.error("Email template not found:", templatePath);
           return res.status(500).json({ message: "Email template missing" });
@@ -40,6 +42,8 @@ class UserController {
       res.cookie("refreshToken", userData.user.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
+        secure,
+        sameSite: 'None'
       });
       const userDTO = new UserDTO(userData.user);
       return res.json({ accessToken: userData.accessToken, user: userDTO });
@@ -56,6 +60,8 @@ class UserController {
       res.cookie("refreshToken", userData.user.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
+        secure,
+        sameSite: 'None'
       });
       const userDTO = new UserDTO(userData.user);
       return res.json({ accessToken: userData.accessToken, user: userDTO });
@@ -99,6 +105,8 @@ class UserController {
       res.cookie("refreshToken", userData.user.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
+        secure,
+        sameSite: 'None'
       });
       return res.json(userData);
     } catch (e) {
@@ -125,8 +133,9 @@ class UserController {
           res.cookie("refreshToken", userData.user.refreshToken, {
             maxAge: 30 * 24 * 60 * 60 * 1000,
             httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'None'
           });
-
         return res.json(userData);
       }
     } catch (e) {

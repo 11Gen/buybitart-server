@@ -4,13 +4,14 @@ const SectionSchema = new mongoose.Schema(
   {
     title: { type: String, default: undefined },
     description: { type: String, default: undefined },
+    list: [{ type: String, default: undefined }],
+    additional: { type: String, default: undefined },
     images: [
       {
         original: { type: String, required: true },
         optimized: { type: String, required: true },
       },
     ],
-    list: [{ type: String, default: undefined }],
   },
   { _id: false }
 );
