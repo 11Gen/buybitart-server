@@ -521,7 +521,7 @@ class PaymentController {
               notificationController.orderUpdated(foundOrder, foundOrder.payer, "BTCPay Server", foundOrder.productType),
               notificationController.sendTelegramNotification(message, 0),
               notificationController.orderUpdatedSelf(
-                newOrder,
+                foundOrder,
                 foundOrder.payer,
                 "BTCPay Server",
                 foundOrder.productType
@@ -556,7 +556,7 @@ class PaymentController {
               notificationController.orderUpdated(foundOrder, foundOrder.payer, "BTCPay Server", foundOrder.productType),
               notificationController.sendTelegramNotification(message, 0),
               notificationController.orderUpdatedSelf(
-                newOrder,
+                foundOrder,
                 foundOrder.payer,
                 "BTCPay Server",
                 foundOrder.productType
