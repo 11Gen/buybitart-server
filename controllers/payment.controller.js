@@ -569,6 +569,7 @@ class PaymentController {
 
         return res.sendStatus(200);
       }
+      return res.sendStatus(200);
     } catch (error) {
       console.error("Webhook error:", error);
       if (!res.headersSent) res.status(500).send("Error processing webhook");
