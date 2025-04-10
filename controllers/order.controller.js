@@ -7,10 +7,6 @@ class OrderController {
       const orders = await order
         .find({})
         .populate({
-          path: "items.product",
-          select: "title price images createdAt delivery hash",
-        })
-        .populate({
           path: "payer",
           select: "_id email name",
         })
@@ -23,7 +19,7 @@ class OrderController {
             order.items.map(async (item) => {
               const { product, productType, ...restItem } = item;
 
-              const galleryItem = await galleryProduct.findById(product._id);
+              const galleryItem = await galleryProduct.findById(product).lean();
 
               const images =
                 galleryItem?.images?.length > 0 ? [galleryItem.images[0]] : [];
@@ -31,7 +27,7 @@ class OrderController {
               return {
                 ...restItem,
                 productType,
-                ...product,
+                ...galleryItem,
                 images,
               };
             })
