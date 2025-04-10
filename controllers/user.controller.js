@@ -133,7 +133,7 @@ class UserController {
           res.cookie("refreshToken", userData.user.refreshToken, {
             maxAge: 30 * 24 * 60 * 60 * 1000,
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure,
             sameSite: 'None'
           });
         return res.json(userData);
