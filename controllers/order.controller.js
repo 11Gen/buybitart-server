@@ -1,3 +1,4 @@
+const { galleryProduct } = require("../models/galleryProduct");
 const { order } = require("../models/order");
 
 class OrderController {
@@ -15,32 +16,45 @@ class OrderController {
         })
         .sort({ createdAt: -1 })
         .lean();
-  
-      const transformedOrders = orders.map((order) => ({
-        ...order,
-        payer: {
-          _id: order.payer._id,
-          email: order.payer.email,
-          name: order.payer.name || null,
-        },
-        items: order.items.map((item) => {
-          const { product, productType, ...restItem } = item;
+
+      const transformedOrders = await Promise.all(
+        orders.map(async (order) => {
+          const transformedItems = await Promise.all(
+            order.items.map(async (item) => {
+              const { product, productType, ...restItem } = item;
+
+              const galleryItem = await galleryProduct.findById(product._id);
+
+              const images =
+                galleryItem?.images?.length > 0 ? [galleryItem.images[0]] : [];
+
+              return {
+                ...restItem,
+                productType,
+                ...product,
+                images,
+              };
+            })
+          );
+
           return {
-            ...restItem,
-            productType,
-            ...product,
-            images: product?.images?.length > 0 ? [product.images[0]] : [],
+            ...order,
+            payer: {
+              _id: order.payer._id,
+              email: order.payer.email,
+              name: order.payer.name || null,
+            },
+            items: transformedItems,
           };
-        }),
-      }));
-  
+        })
+      );
+
       res.send(transformedOrders);
     } catch (e) {
       console.error(e);
       res.status(400).send("Error occurred");
     }
   }
-  
 }
 
 module.exports = new OrderController();
