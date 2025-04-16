@@ -106,6 +106,8 @@ class AuctionService {
 
     if (!populatedAuction || populatedAuction.bids.length === 0) {
       console.log(`Аукцион ${auc._id} не имеет ставок.`);
+      populatedAuction.status = 'failed';
+      await populatedAuction.save();
       return null;
     }
 
